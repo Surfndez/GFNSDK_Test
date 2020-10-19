@@ -11,7 +11,7 @@ Please refer to the [GFN SDK Primer](./doc/GFN-SDK-PRIMER.pdf) for a more detail
 ### What's New in This Release
 * New NVIDIA Identity Federation System
 * gfnRequestGfnAccessToken, gfnGetTitlesAvailableRelease APIs are deprecated
-* All get APIs (gfnGetClientIp, gfnGetClientLanguageCode, gfnGetCustomData) internally will allocate buffers in dynamic memory instead of using static memory
+* All get APIs (gfnGetClientIp, gfnGetClientLanguageCode, gfnGetCustomData) will allocate buffers in dynamic memory instead of using static memory
 * New gfnFree API that releases memory allocated by Get functions
 * New getAuthData API to retrieve custom authorized data
 * Fixed filename typos (GfnRuntimeSdk_SecureLoadLibrary.*)
