@@ -89,26 +89,15 @@ Introduction</h1>
 <div class="image">
 <img src="ecosystem.png" alt="ecosystem.png"/>
 </div>
-<p>This document provides details of how to integrate the native APIs of GFN Runtime SDK features into your application and its developer and deployment processes. For more detailed technical information about the architecture, refer to the architecture section later in this document</p>
+<p>This document provides details of how to integrate the native APIs of GFN Runtime SDK features into your application and its developer and deployment processes.</p>
 <h1><a class="anchor" id="overview"></a>
 Overview</h1>
-<div class="image">
-<img src="architecture.png" alt="architecture.png"/>
-</div>
 <p>The GFN Runtime SDK provides a dynamic library with API exports as defined in this document, which is distributed with and loaded by the game/application that utilizes the APIs. The loading of this library should be done in a way that validates the authenticity of the binary via checking for a valid digital signature, and that signature is from NVIDIA Corporation.</p>
 <p>The behavior of the APIs depends on the environment the application is running in; either on a client/user system or in the GeForce NOW (GFN) cloud environment. Each API defines which of the environments it is designed to run in.</p>
 <p>On client systems, this library checks for the presence of the GeForce NOW (GFN) client installation when any of the gfnStartStream API variants is called. If the client is not present, then the library will initiate a download and installation of the latest GFN client, presenting UI to the user for the download and installation process. If the GFN client is present, but out of date, then a similar download and install process to update the client will take place before the streaming session will start.</p>
 <p>Once the GFN client is installed, all API actions are deferred to the GFN client. This design allows the dynamic library to stay as thin as possible in the application, and provides backward and forward compatibility to new GFN client packages.</p>
 <p>On GFN game systems, many of the APIs are no-ops as they apply only to client/end-user systems. In those cases, API calls will return a well-defined error code to denote the call was not applicable to the environment.</p>
-<p>NVIDIA provides a backend IDM Service that application developers can use to validate users and obtain user information from.This provides a seamless flow for users to bypass multiple login steps in streaming a game through GFN.</p>
-<p>A simplified flow diagram of how this functions is shown below:</p>
-<div class="image">
-<img src="authentication.png" alt="authentication.png"/>
-</div>
-<p>Authentication between the Partner IDM and NVIDIA IDM happens using secure HTTPS web API calls, and the account linking flow utilizes standard oauth2 protocol. Once the account link is established the authentication process between Partner and NVIDIA becomes transparent to the user, and gaming streaming can be initiated without requiring any further authentication or manual login.</p>
-<div class="image">
-<img src="account_link_flow.png" alt="account_link_flow.png"/>
-</div>
+<p>Authentication between the Partner IDM and NVIDIA IDM happens using secure HTTPS web API calls, and the account linking flow utilizes standard oauth2 protocol. Once the account link is established the authentication process between Partner and NVIDIA becomes transparent to the user, and gaming streaming can be initiated without requiring any further authentication or manual login. For more information on linking your account system with NVIDIA, please refer to SDK-NVIDIA-IDENTITY-FEDERATION-SYSTEM.pdf available as part of the documentation section of the SDK's repository.</p>
 <p>After the account link between Partner and NVIDIA has been established, that link can be utilized on the GFN server to facilitate Single Sign-On (SSO) so that the user does not have to manually login again, but all authentication happens transparently and the game launches immediately.</p>
 <div class="image">
 <img src="sso.png" alt="sso.png"/>

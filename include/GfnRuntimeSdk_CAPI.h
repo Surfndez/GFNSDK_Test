@@ -48,12 +48,9 @@
 /// @image html ecosystem.png
 ///
 /// This document provides details of how to integrate the native APIs of GFN Runtime SDK features
-/// into your application and its developer and deployment processes. For more detailed technical
-/// information about the architecture, refer to the architecture section later in this document
+/// into your application and its developer and deployment processes. 
 ///
 /// @section overview Overview
-///
-/// @image html architecture.png
 ///
 /// The GFN Runtime SDK provides a dynamic library with API exports as defined in this document,
 /// which is distributed with and loaded by the game/application that utilizes the APIs. The loading
@@ -79,22 +76,15 @@
 /// systems. In those cases, API calls will return a well-defined error code to denote the call
 /// was not applicable to the environment.
 ///
-/// NVIDIA provides a backend IDM Service that application developers can use to validate users
-/// and obtain user information from.This provides a seamless flow for users to bypass multiple
-/// login steps in streaming a game through GFN.
-///
-/// A simplified flow diagram of how this functions is shown below:
-///
-/// @image html authentication.png
-///
 /// Authentication between the Partner IDM and NVIDIA IDM happens using secure
 /// HTTPS web API calls, and the account linking flow utilizes standard oauth2
 /// protocol. Once the account link is established the authentication process
 /// between Partner and NVIDIA becomes transparent to the user, and gaming
 /// streaming can be initiated without requiring any further authentication or
 /// manual login.
-///
-/// @image html account_link_flow.png
+/// For more information on linking your account system with NVIDIA, please refer
+/// to SDK-NVIDIA-IDENTITY-FEDERATION-SYSTEM.pdf available as part of the 
+/// documentation section of the SDK's repository.
 ///
 /// After the account link between Partner and NVIDIA has been established, that
 /// link can be utilized on the GFN server to facilitate Single Sign-On (SSO) so

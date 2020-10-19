@@ -12,7 +12,7 @@
 #include "shared/client_util.h"
 #include "shared/defines.h"
 #include "shared/main.h"
-#include "GfnRuntimeSdk_Wrapper.h"  //Helper functions that wrap Library-based APIs#include <Shlobj.h>
+#include "GfnRuntimeSdk_Wrapper.h"  //Helper functions that wrap Library-based APIs
 
 #include <fstream>
 
