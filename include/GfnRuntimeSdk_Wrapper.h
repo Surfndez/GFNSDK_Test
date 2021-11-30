@@ -1,30 +1,30 @@
-// ===============================================================================================
+// This code contains NVIDIA Confidential Information and is disclosed to you
+// under a form of NVIDIA software license agreement provided separately to you.
 //
-/* Copyright (c) 2020, NVIDIA CORPORATION. All rights reserved.
+// Notice
+// NVIDIA Corporation and its licensors retain all intellectual property and
+// proprietary rights in and to this software and related documentation and
+// any modifications thereto. Any use, reproduction, disclosure, or
+// distribution of this software and related documentation without an express
+// license agreement from NVIDIA Corporation is strictly prohibited.
+//
+// ALL NVIDIA DESIGN SPECIFICATIONS, CODE ARE PROVIDED "AS IS.". NVIDIA MAKES
+// NO WARRANTIES, EXPRESSED, IMPLIED, STATUTORY, OR OTHERWISE WITH RESPECT TO
+// THE MATERIALS, AND EXPRESSLY DISCLAIMS ALL IMPLIED WARRANTIES OF NONINFRINGEMENT,
+// MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE.
+//
+// Information and code furnished is believed to be accurate and reliable.
+// However, NVIDIA Corporation assumes no responsibility for the consequences of use of such
+// information or for any infringement of patents or other rights of third parties that may
+// result from its use. No license is granted by implication or otherwise under any patent
+// or patent rights of NVIDIA Corporation. Details are subject to change without notice.
+// This code supersedes and replaces all information previously supplied.
+// NVIDIA Corporation products are not authorized for use as critical
+// components in life support devices or systems without express written approval of
+// NVIDIA Corporation.
+//
+// Copyright (c) 2020-2021 NVIDIA Corporation. All rights reserved.
 
-  Redistribution and use in source and binary forms, with or without
-  modification, are permitted provided that the following conditions
-  are met:
-   * Redistributions of source code must retain the above copyright
-     notice, this list of conditions and the following disclaimer.
-   * Redistributions in binary form must reproduce the above copyright
-     notice, this list of conditions and the following disclaimer in the
-     documentation and/or other materials provided with the distribution.
-   * Neither the name of NVIDIA CORPORATION nor the names of its
-     contributors may be used to endorse or promote products derived
-     from this software without specific prior written permission.
-
-  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS "AS IS" AND ANY
-  EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
-  PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT OWNER OR
-  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
-  EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
-  PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
-  PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
-  OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 //
 // ===============================================================================================
 //
@@ -50,7 +50,7 @@
 /// characteristics as the export function they wrap. As such, they will return the same
 /// data types as well as error codes. As such, the documentation for each is purposefully
 /// pared down to avoid duplication. There are a few exceptions, and those functions will have
-/// more extensive documentation that calls out the differences. 
+/// more extensive documentation that calls out the differences.
 ///
 /// @section wrapper_api_reference API Wrapper Reference
 /// @subsection wrapper_section Wrapper Methods
@@ -76,7 +76,15 @@
 ///
 /// Language | API
 /// -------- | -------------------------------------
+/// C        | @ref GfnIsRunningInCloudSecure
+///
+/// @copydoc GfnIsRunningInCloudSecure
+///
+/// Language | API
+/// -------- | -------------------------------------
 /// C        | @ref GfnFree
+///
+/// @copydoc GfnFree
 ///
 /// Language | API
 /// -------- | -------------------------------------
@@ -113,6 +121,12 @@
 /// C        | @ref GfnGetTitlesAvailable
 ///
 /// @copydoc GfnGetTitlesAvailable
+///
+/// Language | API
+/// -------- | -------------------------------------
+/// C        | @ref GfnGetClientInfo
+///
+/// @copydoc GfnGetClientInfo
 ///
 /// Language | API
 /// -------- | -------------------------------------
@@ -167,6 +181,30 @@
 /// C        | @ref GfnRegisterSaveCallback
 ///
 /// @copydoc GfnRegisterSaveCallback
+///
+/// Language | API
+/// -------- | -------------------------------------
+/// C        | @ref GfnRegisterSessionInitCallback
+///
+/// @copydoc GfnRegisterSessionInitCallback
+///
+/// Language | API
+/// -------- | -------------------------------------
+/// C        | @ref GfnAppReady
+///
+/// @copydoc GfnAppReady
+///
+/// Language | API
+/// -------- | -------------------------------------
+/// C        | @ref GfnSetActionZone
+///
+/// @copydoc GfnSetActionZone
+///
+/// Language | API
+/// -------- | -------------------------------------
+/// C        | @ref GfnRegisterClientInfoCallback
+///
+/// @copydoc GfnRegisterClientInfoCallback
 
 #include "GfnRuntimeSdk_CAPI.h"
 
@@ -181,11 +219,11 @@ extern "C"
 #endif
     /// @defgroup wrapper API Wrapper Methods
     /// @{
-    
+
     /// @par Description
     /// Loads the GFN SDK dynamic library and calls @ref gfnInitializeRuntimeSdk. By default, the function
     /// expects the library to be in the same folder as the loading process's executable. For
-    /// security reasons, the dynamic library is loaded by fully-quanitified path. If the GFN SDK 
+    /// security reasons, the dynamic library is loaded by fully-quanitified path. If the GFN SDK
     /// library is packaged in another folder, you will need to locally modify the function to
     /// reference that location.
     ///
@@ -201,9 +239,32 @@ extern "C"
     /// @retval gfnInitSuccessClientOnly  - If the SDK was initialized, but only client-side functionality is available, such as
     ///                                     calls to gfnStartStream. By definition, gfnIsRunningInCloud is expected to return false
     ///                                     in this scenario.
-    /// @retval gfnDllNotPresent          - GFN SDK Library could not be found.
+    /// @retval gfnClientLibraryNotFound  - GFN SDK client-side library could not be found
+    /// @retval gfnCloudLibraryNotFound   - GFN SDK cloud-side library could not be found
     /// @retval gfnAPINotFound            - The API was not found in the GFN SDK Library
     GfnRuntimeError GfnInitializeSdk(GfnDisplayLanguage language);
+
+    /// @par Description
+    /// Loads the GFN SDK dynamic library from the given path and calls @ref gfnInitializeRuntimeSdk.
+    ///
+    /// @par Environment
+    /// Cloud and Client
+    ///
+    /// @par Usage
+    /// Call as soon as possible during application startup.
+    ///
+    /// @param language                   - Language to use for any UI, such as GFN download and install progress dialogs.
+    ///                                     Defaults to system language if not defined.
+    /// @param sdkLibraryPath             - Fully-quantified path to GFN SDK Library including the name GfnRuntimeSdk.dll,
+    ///                                     note that dll cannot be renamed to any other string.
+    /// @retval gfnSuccess                - If the SDK was initialized and all SDK features are available.
+    /// @retval gfnInitSuccessClientOnly  - If the SDK was initialized, but only client-side functionality is available, such as
+    ///                                     calls to gfnStartStream. By definition, gfnIsRunningInCloud is expected to return false
+    ///                                     in this scenario.
+    /// @retval gfnClientLibraryNotFound  - GFN SDK client-side library could not be found
+    /// @retval gfnCloudLibraryNotFound   - GFN SDK cloud-side library could not be found
+    /// @retval gfnAPINotFound            - The API was not found in the GFN SDK Library
+    GfnRuntimeError GfnInitializeSdkFromPath(GfnDisplayLanguage language, const char* sdkLibraryPath);
 
     ///
     /// @par Description
@@ -215,32 +276,70 @@ extern "C"
     ///
     /// @par Usage
     /// Call during application shutdown or when GFN Runtime API methods are no longer needed.
-    /// @retval gfnSuccess                - If the SDK was initialized and all SDK features are available.
-    /// @retval gfnDllNotPresent          - GFN SDK Library could not be found.
+    /// @retval gfnSuccess                - If the SDK was initialized and all SDK features are available
     /// @retval gfnAPINotFound            - The API was not found in the GFN SDK Library
     GfnRuntimeError GfnShutdownSdk(void);
 
     ///
     /// @par Description
-    /// Calls @ref gfnIsRunningInCloud to determine if calling application is runn in GFN environment.
+    /// Calls @ref gfnIsRunningInCloud to determine if calling application is running in GFN environment,
+    /// and without requiring process elevation.
     ///
     /// @par Environment
     /// Cloud and Client
     ///
     /// @par Usage
-    /// Use to determine whether to enable / disable any GFN cloud environment specific
-    /// application logic, for example, to block any calls to gfnStartStream().
+    /// Use to quickly determine whether to enable / disable any low-value GFN cloud environment
+    /// specific application logic, for example, to block any calls to @ref GfnStartStream() to
+    /// avoid an error, or to know if @ref GetTitlesAvailable can be called without an error.
+    ///
+    /// @warning
+    /// This API is meant to fill the need to quickly determine if the call looks to be in the
+    /// GFN cloud environment. It purposefully trades off resource-intensive checks for fast response.
+    /// Do not tie any logic or features of value to this API as the call stack could be tampered with.
+    /// For that purpose, use @ref GfnIsRunningInCloudSecure.
     ///
     /// @param runningInCloud             - Pointer to a boolean that receives true if running in GeForce NOW
-    ///                                     cloud or false if not in the GeForce NOW cloud.
-    /// @retval gfnSuccess                - If the query was successful.
-    /// @retval gfnDllNotPresent          - GFN SDK Library could not be found.
+    ///                                     cloud or false if not in the GeForce NOW cloud
+    /// @retval gfnSuccess                - If the query was successful
+    /// @retval gfnClientLibraryNotFound  - GFN SDK client-side library could not be found
+    /// @retval gfnCloudLibraryNotFound   - GFN SDK cloud-side library could not be found
     /// @retval gfnAPINotFound            - The API was not found in the GFN SDK Library
     ///
     /// @note
     /// This function's definition differs from the export that it wraps, as it returns a
     /// GfnRuntimeError instead of bool.
     GfnRuntimeError GfnIsRunningInCloud(bool* runningInCloud);
+
+    ///
+    /// @par Description
+    /// Calls @ref gfnIsRunningInCloudSecure to determine if calling application is running in GFN environment,
+    /// and what level of security assurance that the result is valid.
+    ///
+    /// @par Environment
+    /// Cloud and Client
+    /// Elevated Process
+    ///
+    /// @par Usage
+    /// Call from an elevated process to securely determine whether running in GFN cloud, and use the
+    /// GfnIsRunningInCloudAssurance value to decide the risk to enable any application specific logic
+    /// for that environment.
+    ///
+    /// @warning
+    /// This API must be called from a high-integrity elevated process, or it will fail by design. To prevent
+    /// man-in-the-middle (MiM) attacks, you must also securely load the SDK library, checking the integrity
+    /// of the digital signature on the binary. Make sure to use the value returned from GfnIsRunningInCloudassurance
+    /// to decide if the check was certain enough without tampering to enable the logic or feature associated
+    /// with the API call.
+    ///
+    /// @param assurance                  - Likelihood and level of security assurance defined via @ref GfnIsRunningInCloudAssurance that API is running in GFN cloud environment
+    ///
+    /// @retval gfnSuccess                - If the query was successful.
+    /// @retval gfnRequiredElevation      - The API was called from a non-elevated process
+    /// @retval gfnClientLibraryNotFound  - GFN SDK client-side library could not be found
+    /// @retval gfnCloudLibraryNotFound   - GFN SDK cloud-side library could not be found
+    /// @retval gfnAPINotFound            - The API was not found in the GFN SDK Library
+    GfnRuntimeError GfnIsRunningInCloudSecure(GfnIsRunningInCloudAssurance* assurance);
 
     ///
     /// @par Description
@@ -258,7 +357,7 @@ extern "C"
     /// @retval gfnSuccess               - On success
     /// @retval gfnInvalidParameter      - NULL pointer passed in
     /// @retval gfnCallWrongEnvironment  - If called in a client environment
-    /// @retval gfnDllNotPresent         - GFN SDK Library could not be found.
+    /// @retval gfnCloudLibraryNotFound  - GFN SDK cloud-side library could not be found
     /// @retval gfnAPINotFound           - The API was not found in the GFN SDK Library
     /// @note
     /// To avoid leaking memory, call @ref gfnFree once done with the data.
@@ -281,7 +380,7 @@ extern "C"
     /// @retval gfnSuccess               - On success
     /// @retval gfnInvalidParameter      - NULL pointer passed in
     /// @retval gfnCallWrongEnvironment  - If called in a client environment
-    /// @retval gfnDllNotPresent         - GFN SDK Library could not be found.
+    /// @retval gfnCloudLibraryNotFound  - GFN SDK cloud-side library could not be found
     /// @retval gfnAPINotFound           - The API was not found in the GFN SDK Library
     /// @note
     /// To avoid leaking memory, call @ref gfnFree once done with the data.
@@ -289,25 +388,44 @@ extern "C"
 
     ///
     /// @par Description
-    /// Gets userís client country code using ISO 3166-1 Alpha-2 country code.
+    /// Gets user's client country code using ISO 3166-1 Alpha-2 country code.
     ///
     /// @par Environment
     /// Cloud
     ///
     /// @par Usage
-    /// Call this during application start or from the platform client in order to get 
+    /// Call this during application start or from the platform client in order to get
     /// the user's country code.
     ///
-    /// @param[out] countryCode          - Country code as a 2 character string. Example: ìUSî
+    /// @param[out] countryCode          - Country code as a 2 character string. Example: ‚ÄúUS‚Äù
     /// @param length                    - Length of pchCountryCode character array
     ///
     /// @retval gfnSuccess               - On success
     /// @retval gfnInvalidParameter      - NULL pointer passed in
     /// @retval gfnCallWrongEnvironment  - If called in a client environment
-    /// @retval gfnDllNotPresent         - GFN SDK Library could not be found.
+    /// @retval gfnCloudLibraryNotFound  - GFN SDK cloud-side library could not be found
     /// @retval gfnAPINotFound           - The API was not found in the GFN SDK Library
     GfnRuntimeError GfnGetClientCountryCode(char* countryCode, unsigned int length);
 
+    ///
+    /// @par Description
+    /// Gets user's client data.
+    ///
+    /// @par Environment
+    /// Cloud
+    ///
+    /// @par Usage
+    /// Call this during application start or from the platform client in order to get
+    /// the data on the user's client.
+    ///
+    /// @param[out] clientInfo           - A structure to hold clientInfo data
+    ///
+    /// @retval gfnSuccess               - On success
+    /// @retval gfnInvalidParameter      - NULL pointer passed in
+    /// @retval gfnCallWrongEnvironment  - If called in a client environment
+    /// @retval gfnCloudLibraryNotFound  - GFN SDK cloud-side library could not be found
+    /// @retval gfnAPINotFound           - The API was not found in the GFN SDK Library
+        GfnRuntimeError GfnGetClientInfo(GfnClientInfo* clientInfo);
     ///
     /// @par Description
     /// Calls @ref GfnGetCustomData to retrieves custom data passed in by the client in the
@@ -324,7 +442,7 @@ extern "C"
     /// @retval gfnSuccess              - On success
     /// @retval gfnInvalidParameter     - NULL pointer passed in
     /// @retval gfnCallWrongEnvironment - If called in a client environment
-    /// @retval gfnDllNotPresent        - GFN SDK Library could not be found.
+    /// @retval gfnCloudLibraryNotFound  - GFN SDK cloud-side library could not be found
     /// @retval gfnAPINotFound          - The API was not found in the GFN SDK Library
     /// @note
     /// To avoid leaking memory, call @ref gfnFree once done with the data.
@@ -346,7 +464,7 @@ extern "C"
     /// @retval gfnSuccess              - On success
     /// @retval gfnInvalidParameter     - NULL pointer passed in
     /// @retval gfnCallWrongEnvironment - If called in a client environment
-    /// @retval gfnDllNotPresent        - GFN SDK Library could not be found.
+    /// @retval gfnCloudLibraryNotFound  - GFN SDK cloud-side library could not be found
     /// @retval gfnAPINotFound          - The API was not found in the GFN SDK Library
     /// @note
     /// To avoid leaking memory, call @ref gfnFree once done with the data.
@@ -370,7 +488,7 @@ extern "C"
     ///
     /// @retval gfnSuccess               - If the query was successful.
     /// @retval gfnCallWrongEnvironment  - If called in a client environment
-    /// @retval gfnDllNotPresent         - GFN SDK Library could not be found.
+    /// @retval gfnCloudLibraryNotFound  - GFN SDK cloud-side library could not be found
     /// @retval gfnAPINotFound           - The API was not found in the GFN SDK Library
     ///
     /// @note
@@ -397,7 +515,7 @@ extern "C"
     /// @retval gfnSuccess               - On success
     /// @retval gfnInvalidParameter      - NULL pointer passed in
     /// @retval gfnCallWrongEnvironment  - If called in a client environment
-    /// @retval gfnDllNotPresent         - GFN SDK Library could not be found.
+    /// @retval gfnCloudLibraryNotFound  - GFN SDK cloud-side library could not be found
     /// @retval gfnAPINotFound           - The API was not found in the GFN SDK Library
     ///
     /// @note
@@ -418,9 +536,10 @@ extern "C"
     ///
     /// @retval gfnSuccess               - On success
     /// @retval gfnInvalidParameter      - NULL pointer passed in
-    /// @retval gfnDllNotPresent         - GFN SDK Library could not be found.
+    /// @retval gfnCloudLibraryNotFound  - GFN SDK cloud-side library could not be found
     /// @retval gfnAPINotFound           - The API was not found in the GFN SDK Library
     GfnRuntimeError GfnFree(const char** data);
+
 
     ///
     /// @par Description
@@ -436,11 +555,11 @@ extern "C"
     /// @param streamStatusCallback      - Function pointer to application code to call after
     ///                                    the Geforce NOW streamer changes state
     /// @param userContext               - Pointer to user context, which will be passed unmodified to the
-    ///                                    registered callback. Can be NULL.
+    ///                                    registered callback. Can be NULL
     ///
     /// @retval gfnSuccess               - On success, when running on the client PC
     /// @retval gfnCallWrongEnvironment  - If callback could not be registered since this function
-    /// @retval gfnDllNotPresent         - GFN SDK Library could not be found.
+    /// @retval gfnClientLibraryNotFound - GFN SDK client-side library could not be found
     /// @retval gfnAPINotFound           - The API was not found in the GFN SDK Library
     GfnRuntimeError GfnRegisterStreamStatusCallback(StreamStatusCallbackSig streamStatusCallback, void* userContext);
 
@@ -462,7 +581,7 @@ extern "C"
     /// @retval gfnInvalidParameter     - NULL pointer passed in
     /// @retval gfnCallWrongEnvironment - If called in a cloud environment
     /// @retval gfnStreamFailure        - Network failure or other error prevented the stream from starting
-    /// @retval gfnDllNotPresent        - GFN SDK Library could not be found.
+    /// @retval gfnClientLibraryNotFound - GFN SDK client-side library could not be found.
     /// @retval gfnAPINotFound          - The API was not found in the GFN SDK Library
     GfnRuntimeError GfnStartStream(StartStreamInput* startStreamInput, StartStreamResponse* response);
 
@@ -485,7 +604,7 @@ extern "C"
     /// @retval gfnSuccess               - On success
     /// @retval gfnInvalidParameter      - NULL pointer passed in
     /// @retval gfnCallWrongEnvironment  - If called in a cloud environment
-    /// @retval gfnDllNotPresent         - GFN SDK Library could not be found.
+    /// @retval gfnClientLibraryNotFound - GFN SDK client-side library could not be found
     /// @retval gfnAPINotFound           - The API was not found in the GFN SDK Library
     ///
     /// @note
@@ -507,7 +626,7 @@ extern "C"
     /// @retval gfnSuccess              - On success
     /// @retval gfnCallWrongEnvironment - If called in a cloud environment
     /// @retval gfnStreamStopFailure    - Failure to stop the streaming session
-    /// @retval gfnDllNotPresent        - GFN SDK Library could not be found.
+    /// @retval gfnClientLibraryNotFound - GFN SDK client-side library could not be found
     /// @retval gfnAPINotFound          - The API was not found in the GFN SDK Library
     GfnRuntimeError GfnStopStream(void);
 
@@ -530,7 +649,7 @@ extern "C"
     /// @retval gfnStreamStopFailure     - Failure to stop the streaming session
     /// @retval gfnInvalidParameter      - NULL pointer passed in
     /// @retval gfnCallWrongEnvironment  - If called in a cloud environment
-    /// @retval gfnDllNotPresent         - GFN SDK Library could not be found.
+    /// @retval gfnClientLibraryNotFound - GFN SDK client-side Library could not be found
     /// @retval gfnAPINotFound           - The API was not found in the GFN SDK Library
     ///
     /// @note
@@ -554,13 +673,13 @@ extern "C"
     /// @retval gfnInvalidParameter      - NULL pointer passed in
     /// @retval gfnCallWrongEnvironment  - If called in a client environment
     /// @retval gfnSetupTitleFailure     - The Geforce NOW SDK failed to set up the title
-    /// @retval gfnDllNotPresent         - GFN SDK Library could not be found.
+    /// @retval gfnCloudLibraryNotFound  - GFN SDK cloud-side library could not be found
     /// @retval gfnAPINotFound           - The API was not found in the GFN SDK Library
     GfnRuntimeError GfnSetupTitle(const char* platformAppId);
 
     ///
     /// @par Description
-    /// Calls @ref GfnTitleExited to notifys GFN that an application has exited.
+    /// Calls @ref GfnTitleExited to notify GFN that an application has exited.
     ///
     /// @par Environment
     /// Cloud
@@ -574,7 +693,7 @@ extern "C"
     /// @retval gfnSuccess               - On success
     /// @retval gfnInvalidParameter      - NULL pointer passed in
     /// @retval gfnCallWrongEnvironment  - If called in a client environment
-    /// @retval gfnDllNotPresent         - GFN SDK Library could not be found.
+    /// @retval gfnCloudLibraryNotFound  - GFN SDK cloud-side library could not be found
     /// @retval gfnAPINotFound           - The API was not found in the GFN SDK Library
     GfnRuntimeError GfnTitleExited(const char* platformId, const char* platformAppId);
 
@@ -595,13 +714,13 @@ extern "C"
     ///                                   registered callback. Can be NULL.
     ///
     /// @retval gfnSuccess              - On success, when running in a Geforce NOW environment
-    /// @retval gfnInvalidParameter     - If exitCallback function pointer is NULL.
+    /// @retval gfnInvalidParameter     - If exitCallback function pointer is NULL
     /// @retval gfnCallWrongEnvironment - If callback could not be registered since this function
     ///                                   was called outside of a cloud execution environment
-    /// @retval gfnDllNotPresent        - GFN SDK Library could not be found.
+    /// @retval gfnCloudLibraryNotFound - GFN SDK cloud-side library could not be found
     /// @retval gfnAPINotFound          - The API was not found in the GFN SDK Library
     GfnRuntimeError GfnRegisterExitCallback(ExitCallbackSig exitCallback, void* userContext);
-    
+
     ///
     /// @par Description
     /// Calls @ref gfnRegisterPauseCallback to register an application callback with Geforce NOW
@@ -619,13 +738,13 @@ extern "C"
     ///                                   registered callback. Can be NULL.
     ///
     /// @retval gfnSuccess              - On success, when running in a Geforce NOW environment
-    /// @retval gfnInvalidParameter     - If pauseCallback function pointer is NULL.
+    /// @retval gfnInvalidParameter     - If pauseCallback function pointer is NULL
     /// @retval gfnCallWrongEnvironment - If callback could not be registered since this function
     ///                                   was called outside of a cloud execution environment
-    /// @retval gfnDllNotPresent        - GFN SDK Library could not be found.
+    /// @retval gfnCloudLibraryNotFound - GFN SDK cloud-side library could not be found
     /// @retval gfnAPINotFound          - The API was not found in the GFN SDK Library
     GfnRuntimeError GfnRegisterPauseCallback(PauseCallbackSig pauseCallback, void* userContext);
-    
+
     ///
     /// @par Description
     /// Calls @ref gfnRegisterInstallCallback to register an application callback with Geforce NOW
@@ -643,10 +762,10 @@ extern "C"
     ///                                   registered callback. Can be NULL.
     ///
     /// @retval gfnSuccess              - On success, when running in a Geforce NOW environment
-    /// @retval gfnInvalidParameter     - If installCallback function pointer is NULL.
+    /// @retval gfnInvalidParameter     - If installCallback function pointer is NULL
     /// @retval gfnCallWrongEnvironment - If callback could not be registered since this function
     ///                                   was called outside of a cloud execution environment
-    /// @retval gfnDllNotPresent        - GFN SDK Library could not be found.
+    /// @retval gfnCloudLibraryNotFound - GFN SDK cloud-side library could not be found
     /// @retval gfnAPINotFound          - The API was not found in the GFN SDK Library
     GfnRuntimeError GfnRegisterInstallCallback(InstallCallbackSig installCallback, void* userContext);
 
@@ -655,6 +774,10 @@ extern "C"
     /// Calls @ref gfnRegisterSaveCallback to register an application callback with GFN to be
     /// called when GFN needs the application to save user progress.
     ///
+    ///
+    /// @par Environment
+    /// Cloud
+    /// 
     /// @par Usage
     /// Register an application function to call when GFN needs the application to save
     ///
@@ -663,9 +786,91 @@ extern "C"
     ///                                   callback specified. Can be NULL.
     ///
     /// @retval gfnSuccess              - On success when running in a GFN environment
-    /// @retval gfnDllNotPresent        - GFN SDK Library could not be found.
+    /// @retval gfnCloudLibraryNotFound - GFN SDK cloud-side library could not be found
     /// @retval gfnAPINotFound          - The API was not found in the GFN SDK Library
     GfnRuntimeError GfnRegisterSaveCallback(SaveCallbackSig saveCallback, void* userContext);
+
+    ///
+    /// @par Description
+    /// Calls @ref gfnRegisterSessionInitCallback to register an application callback to be called when a GFN user has
+    /// connected to the game seat.
+    ///
+    /// @par Environment
+    /// Cloud
+    /// 
+    /// @par Usage
+    /// Register an application function to call when a GFN user has connected to the game seat
+    ///
+    /// @param sessionInitCallback      - Function pointer to application code to call when the user has connected
+    /// @param userContext              - Pointer to user context, which will be passed unmodified to the
+    ///                                   callback specified. Can be NULL.
+    ///
+    /// @retval gfnSuccess              - On success when running in a GFN environment
+    /// @retval gfnInvalidParameter     - Callback was NULL
+    /// @retval gfnCloudLibraryNotFound - GFN SDK cloud-side library could not be found
+    /// @retval gfnAPINotFound          - The API was not found in the GFN SDK Library
+    /// @retval gfnCallWrongEnvironment - The on-seat dll detected that it was not on a game seat
+    GfnRuntimeError GfnRegisterSessionInitCallback(SessionInitCallbackSig sessionInitCallback, void* userContext);
+
+
+    ///
+    /// @par Description
+    /// Registers an application callback with GFN to be called when client info changes
+    ///
+    /// @par Environment
+    /// Cloud
+    /// 
+    /// @param clientInfoCallback       - Function pointer to application code to call when GFN client data changes
+    ///
+    /// @retval gfnSuccess              - On success when running in a GFN environment
+    /// @retval gfnCloudLibraryNotFound  - GFN SDK cloud-side library could not be found
+    /// @retval gfnAPINotFound          - The API was not found in the GFN SDK Library
+    GfnRuntimeError GfnRegisterClientInfoCallback(ClientInfoCallbackSig clientInfoCallback, void* userContext);
+
+    ///
+    /// @par Description
+    /// Calls @ref GfnAppReady to notify GFN that an application is ready to be displayed.
+    ///
+    /// @par Environment
+    /// Cloud
+    ///
+    /// @par Usage
+    /// Use to notify GFN that your application is ready to be streamed.
+    ///
+    /// @param success                - True if startup was successful
+    /// @param status                 - Optional startup status
+    ///
+    /// @retval gfnSuccess               - On success
+    /// @retval gfnCallWrongEnvironment  - If called in a client environment
+    /// @retval gfnCloudLibraryNotFound  - GFN SDK cloud-side library could not be found
+    /// @retval gfnAPINotFound           - The API was not found in the GFN SDK Library
+    GfnRuntimeError GfnAppReady(bool success, const char * status);
+
+    ///
+    /// @par Description
+    /// Sends Active zone coordinates to GFN Client
+    ///
+    /// @par Environment
+    /// Cloud
+    ///
+    /// @par Usage
+    /// Use to invoke special events on the client from the GFN cloud environment
+    ///
+    /// @param type                 - Populated with relevant GfnActionType
+    /// @param id                   - unique unsigned int type identifier for this event
+    /// @param zone                 - Optional zone coordinates relevant to type specified
+    ///
+    /// @retval gfnSuccess              - Call was successful
+    /// @retval gfnInputExpected        - Expected zone to have a value
+    /// @retval gfnComError             - There was SDK internal communication error
+    /// @retval gfnInitFailure          - SDK was not initialized
+    /// @retval gfnInvalidParameter     - Invalid parameters provided
+    /// @retval gfnThrottled            - API call was throttled for exceeding limit
+    /// @retval gfnUnhandledException   - API ran into an unhandled error and caught an exception before it returned to client code
+    /// @retval gfnCloudLibraryNotFound - GFN SDK cloud-side library could not be found
+    /// @return Otherwise, appropriate error code
+    GfnRuntimeError GfnSetActionZone(GfnActionType type, unsigned int id, GfnRect* zone);
+
     /// @}
 #ifdef __cplusplus
     } // extern "C"

@@ -2,11 +2,19 @@ This directory contains sample projectors that demonstrate use of the GeForce No
 
 Sample Overview:
 ====================================================================================================
-SampleCApp:
+CGameAPISample:
     This sample demonstrates usage of the application-focused APIs to control behavior of a
     title running in the GeForce NOW environment. The sample focuses on use of callbacks to notify
     a title of environment state changes.
 
+SDKDllDirectRefSample:
+    This sample demonstrates basic SDK usage without relying on the wrapper helper functions. This
+    can be useful for partners who are unable to utilize the wrapper in their environment.
+
+SampleService:
+    This GFN-ready Windows service demonstrates how to call gfnIsRunningInCloudeSecure from a 
+    non-elevated process.
+    
 SampleLauncher:
     This sample demonstrates usage of the Launcher/Publisher-focused APIs, including getting a list
     of supported titles as well as invoking GeForce NOW to start a streaming session of a title. 
