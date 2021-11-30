@@ -65,8 +65,8 @@ The distribution is laid out as below:
 └───samples
     |   README.md
     ├───CGameAPISample
-	├───SDKDllDirectRefSample
-	├───SampleLauncher
+    ├───SDKDllDirectRefSample
+    ├───SampleLauncher
     └───SampleService
 
 ```
