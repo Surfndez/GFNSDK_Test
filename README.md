@@ -10,7 +10,11 @@ Please refer to the [SDK GFN Primer](./doc/SDK-GFN-PRIMER.pdf) for a more detail
 
 ### What's New in This Release
 
-* New samples (CGameAPISample, SDKDllDirectRefSample, SampleService), GFNSDK APIs now return explicit error codes on failure to load client dll or cloud dll.
+* New samples (CGameAPISample, SDKDllDirectRefSample, SampleService)
+* GFNSDK APIs now return explicit error codes on failure to load client DLL or cloud DLL.
+* Fixed an issue with GetClientInfo export missing from the client DLL.
+* Fixed a bug with backwards compatibility for 1.4 and older SDKs in cloud DLL.
+* Fixed false positives in telemetry error events
 
 ## Developer Content Portal
 
